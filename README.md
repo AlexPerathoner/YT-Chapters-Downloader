@@ -5,7 +5,7 @@
 
 ![](https://www.tubics.com/wp-content/uploads/2020/06/youtube-chapters-2.png)
 
--
+
 ## Brief story
 
 To date I haven't found a youtube downloader which also includes these chapters. I therefore decided to do it myself. The result is this script.
