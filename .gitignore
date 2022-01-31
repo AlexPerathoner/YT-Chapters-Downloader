@@ -3,3 +3,4 @@ sample.json
 *.mp4
 *.mp3
 .DS_Store
+*.app

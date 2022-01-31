@@ -1,7 +1,6 @@
 
 
 import pytube
-import youtube_dl
 import os
 import json
 import sys
@@ -53,51 +52,61 @@ if(len(youtube.streams) == 0):
 
 print("Finding best quality...")
 video = getBestVideoStream(youtube.streams)
+title = video.title.replace(":", "").replace(",", "")
 videoExtension = getStreamExtension(video)
 audio = getBestAudioStream(youtube.streams)
 audioExtension = getStreamExtension(audio)
 
+videoFilePath = title+'.'+videoExtension
+audioFilePath = title+'.'+audioExtension
+
 print("Found video: "+video.resolution+"@"+str(video.fps))
 print("Found audio: "+str(audio.abr))
 
-print("Resolving chapters")
 j = json.loads(os.popen('youtube-dl -j ' + url).read())
-if(j['chapters'] == None):
-	print("Couldn't find any chapter in the video!")
-	exit()
-
 print("Downloading video...")
 video.download()
 print("Downloading audio...")
-audio.download(filename=audio.title+"_audio")
+audio.download()
 
-chapters = j['chapters']
-fstr = ""
-for c in chapters:
-	fstr = fstr + """[CHAPTER]
-TIMEBASE=1/10
-START="""+str(c['start_time']*10)+"""
-END="""+str(c['end_time']*10)+"""
-title="""+str(c['title'])+"""
+print("Resolving chapters")
+if(j['chapters'] == None):
+	print("Could find only one chapter in the video!")
+	chaptersFound = False;
+	
+else:
+	chaptersFound = True;
 
-"""
+	chapters = j['chapters']
+	fstr = ""
+	for c in chapters:
+		fstr = fstr + """[CHAPTER]
+	TIMEBASE=1/10
+	START="""+str(c['start_time']*10)+"""
+	END="""+str(c['end_time']*10)+"""
+	title="""+str(c['title'])+"""
 
-videoTitle = video.title.replace(' ', '\ ').replace(':', '').replace(',', '')
+	"""
+	print("Found " + len(chapters) + " chapters")
+
+
 
 print("Combining audio & video and burying chapters...")
+with open(videoFilePath) as videoInputFile, open(audioFilePath) as audioInputFile:
+	os.system('ffmpeg -i \"'+videoInputFile.name+'\" -f ffmetadata '+PYTHONSCRIPTSUPPORTFILE)
 
-os.system('ffmpeg -i '+videoTitle+'.'+videoExtension+' -f ffmetadata '+PYTHONSCRIPTSUPPORTFILE)
-with open("PYTHONSCRIPTSUPPORTFILE", "a") as myfile:
-	myfile.write(fstr)
-    
-os.system('ffmpeg -i '+videoTitle+'.webm -i '+videoTitle+'_audio.'+audioExtension+' -i '+PYTHONSCRIPTSUPPORTFILE+' -map_metadata 1 -c:v copy -c:a aac '+videoTitle+'.mkv')
+	if(chaptersFound):
+		with open(PYTHONSCRIPTSUPPORTFILE, "a") as metadataFile:
+			metadataFile.write(fstr)
+			
+	os.system('ffmpeg -i \"' + videoInputFile.name + '\" -i \"'+audioInputFile.name+'\" -i '+PYTHONSCRIPTSUPPORTFILE+' -map_metadata 1 -c:v copy -c:a aac \"'+title+'.mkv\"')
+
 
 print("Finishing up")
 os.remove(PYTHONSCRIPTSUPPORTFILE)
-os.system('rm ' + videoTitle+'.'+videoExtension)
-os.system('rm ' + videoTitle+'_audio.'+audioExtension)
-
-print("Everything done! Please check github.com/AlexPerathoner!")
+os.system('rm \"' + videoFilePath + "\"")
+os.system('rm \"' + audioFilePath + "\"")
+print("\n\nEverything done! Please check github.com/AlexPerathoner!")
 
 
 
