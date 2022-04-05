@@ -30,9 +30,6 @@ def getBestVideoStream(lista):
 			ress.append(-1)
 	return lista[ress.index(max(ress))]
 
-def getStreamExtension(i):
-	return i.mime_type.split('/')[1]
-
 def getBestAudioStream(lista):
 	ress = []
 	for i in lista:
@@ -52,22 +49,17 @@ if(len(youtube.streams) == 0):
 
 print("Finding best quality...")
 video = getBestVideoStream(youtube.streams)
-title = video.title.replace(":", "").replace(",", "")
-videoExtension = getStreamExtension(video)
+title = youtube.title
 audio = getBestAudioStream(youtube.streams)
-audioExtension = getStreamExtension(audio)
-
-videoFilePath = title+'.'+videoExtension
-audioFilePath = title+'.'+audioExtension
 
 print("Found video: "+video.resolution+"@"+str(video.fps))
 print("Found audio: "+str(audio.abr))
 
 j = json.loads(os.popen('youtube-dl -j ' + url).read())
 print("Downloading video...")
-video.download()
+videoFilePath=video.download()
 print("Downloading audio...")
-audio.download()
+audioFilePath=audio.download()
 
 print("Resolving chapters")
 if(j['chapters'] == None):
@@ -87,7 +79,7 @@ else:
 	title="""+str(c['title'])+"""
 
 	"""
-	print("Found " + len(chapters) + " chapters")
+	print("Found " + str(len(chapters)) + " chapters")
 
 
 
@@ -106,7 +98,7 @@ print("Finishing up")
 os.remove(PYTHONSCRIPTSUPPORTFILE)
 os.system('rm \"' + videoFilePath + "\"")
 os.system('rm \"' + audioFilePath + "\"")
-print("\n\nEverything done! Please check github.com/AlexPerathoner!")
+print("\n\nEverything done! Please check out my github account: github.com/AlexPerathoner !")
 
 
 

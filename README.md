@@ -3,7 +3,7 @@
 #### In the first half of 2020 YouTube introduced the option to add chapters to a progress bar.
 > *Chapters break up your video into sections, each with an individual preview. These chapters can help viewers by giving more info and context by allowing them to rewatch different parts of the video.*
 
-![](https://www.tubics.com/wp-content/uploads/2020/06/youtube-chapters-2.png)
+![](https://assets-global.website-files.com/61a0a53beeb118af7ddb4c55/61c32b51b6c49d47a4ef7b14_YouTube-Chapters-1.png)
 
 
 ## Brief story
@@ -15,6 +15,10 @@ What it does is download the given video, search for chapters and feeds them in 
 ## Dependencies
 
 This script uses `ffmpeg` to modify the downloaded video metadata and add the chapters.
+
+You will also need the following python libraries:
+
+- `pytube (12.0.0)`
 
 ## How to use
 
